@@ -1,0 +1,271 @@
+/* Source: https://fonts.google.com/selection/embed */
+@import url('https://fonts.googleapis.com/css2?family=Pompiere&display=swap');
+/* Source: https://colorhunt.co/palette/ececec84934a656d3f492828#/ */
+
+:root{
+  --background-color: #ECECEC;
+  --primary-color: #84934A;
+  --secondary-color: #656D3F;
+  --accent-color: #492828;
+  --homeFontColor: #FFFFFF;
+}
+/* For dark mode management */
+:root.dark-mode{
+  --background-color: #656D3F;
+  --primary-color: #84934A;
+  --secondary-color: #492828;
+  --accent-color: #ECECEC;
+  --homeFontColor:#FFFFFF;
+}
+/* Default font size */
+html{
+  font-size: 20px;
+}
+body{
+  margin: 0;
+  padding: 0;
+  background-color: var(--background-color);
+  font-family: 'Pompiere', cursive;
+  font-size: 20px;
+}
+
+footer{
+  position:fixed;
+  width: 100%;
+  bottom: 0;
+  text-align: center;
+  background-color: var(--primary-color);
+  color: var(--accent-color);
+  font-family: 'Pompiere', cursive;
+  font-size: 1rem;
+  padding: 3px 0;
+}
+
+button, select, textarea{
+  font-family: 'Pompiere', cursive;
+}
+
+input{
+  font-family: 'Pompiere', cursive;
+}
+
+label{
+  margin-right: 8px;
+}
+
+button, select, input, textarea{
+  font-size: 1rem;
+  border-radius: 10px;
+  border: 1px solid var(--accent-color);
+  padding: 6px 10px;
+  background-color: var(--background-color);
+  color: var(--accent-color);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+}
+
+input[type="range"]{
+  padding: 0;
+  border: none;
+  background-color: transparent;
+  box-shadow: none;
+}
+
+button:hover, select:hover, input:hover, textarea:hover{
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+
+button:active{
+  transform: translateY(1px);
+}
+
+#addCart{
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+#addCart:hover{
+  cursor: pointer;
+  background-color: rgba(255, 255, 255, 1);
+}
+
+#addCart:active{
+  transform: translateY(2px) scale(0.98);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+/* Style the navbar */
+.navbar {
+  position: fixed; /*Don't move when scrolling*/
+   top: 0; /* Stick it to the top */
+  display: flex; /* Use flexbox for layout to get that iconic navbar layout*/
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  min-height: 4rem;
+  border-bottom: 2px solid var(--accent-color);
+  box-shadow: var(--secondary-color);
+  background-color: var(--secondary-color);
+  color: var(--background-color);
+  font-family: 'Pompiere', cursive;
+  z-index: 10;
+}
+
+.logo {
+  font-size: 1.5rem;
+  padding-left: 30px; /* Add some padding to the left */
+  color: var(--accent-color);
+}
+
+/* Style the buttons that are used to open the navbar */
+.navbar button {
+  background-color: inherit;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  transition: 0.3s;
+  font-size: 1rem;
+  padding: 14px 16px;
+  border-radius: 25px;
+}
+
+.tabs {
+  display: flex;
+  gap: 10px; /* Space between buttons */
+  padding-right: 30px; /* Add some padding to the right */
+}
+
+/* Change background color of buttons on hover */
+.tabs button:hover {
+  background-color: var(--primary-color);
+}
+
+/* Create an active/current tablink class */
+.tabs button.active {
+  background-color: var(--secondary-color);
+  color: var(--background-color);
+}
+
+/* forcing Accessibility button to remain the same style as the rest when active */
+.tabs button.active#AccessibilityTab {
+  background-color: var(--secondary-color);
+  color: var(--background-color);
+}
+
+/* Style the tab content */
+#Products, #Client, #Cart, #Accessibility{
+  min-height: 100vh;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  padding: calc(4rem + 1.5rem) 12px 6rem;
+  background-color: var(--background-color);
+  color: var(--accent-color);
+}
+
+#Home {
+  min-height: 100vh;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  padding: calc(4rem + 1.5rem) 12px 6rem;
+  background-image: url('Background.png');
+  background-size: cover;
+  background-position: center;
+  background-color: var(--background-color);
+  color: var(--accent-color);
+}
+
+.product-instructions{
+  margin-bottom: 12px;
+  font-weight: 600;
+}
+
+.product-list{
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: min(720px, 90%);
+  margin-bottom: 16px;
+}
+
+.product-item{
+  display: grid;
+  grid-template-columns: 64px 24px 1fr auto auto auto;
+  align-items: center;
+  gap: 10px;
+  background-color: rgba(255, 255, 255, 0.08);
+  padding: 8px 12px;
+  border-radius: 12px;
+}
+
+.product-label{
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.product-price{
+  font-size: 0.95rem;
+  opacity: 0.9;
+}
+
+.product-qty-label{
+  font-size: 0.9rem;
+}
+
+.product-qty{
+  width: 64px;
+  border-radius: 8px;
+  border: 1px solid var(--accent-color);
+  padding: 4px 6px;
+}
+
+.product-image{
+  width: 56px;
+  height: 56px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 3px solid #f6ffcf33;
+  background-color: rgba(255,255,255,0.1);
+}
+
+.product-image.placeholder{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  color: rgba(255,255,255,0.7);
+}
+
+.cart-item{
+  grid-template-columns: 64px 1fr auto auto auto 24px;
+}
+
+.cart-name{
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.cart-qty, .cart-unit, .cart-line-total{
+  font-size: 0.95rem;
+  opacity: 0.9;
+}
+
+.cart-remove{
+  border: 1px solid #71784E;
+  background-color: transparent;
+  color: var(--background-color);
+  font-size: 1.1rem;
+  padding: 2px 6px;
+  justify-self: end;
+  border-radius: 6px;
+  box-shadow: none;
+}
+
+.cart-remove:hover{
+  cursor: pointer;
+  background-color: rgba(255,255,255,0.08);
+}
+#darkModeToggle{
+   animation: ease-out 5s;
+  }
