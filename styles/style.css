@@ -24,6 +24,7 @@ html{
 body{
   margin: 0;
   padding: 0;
+  top: 0; /* Stick it to the top */
   background-color: var(--background-color);
   font-family: 'Pompiere', cursive;
   font-size: 20px;
@@ -94,30 +95,15 @@ button:active{
 }
 
 /* Style the navbar */
-.navbar {
-  position: fixed; /*Don't move when scrolling*/
-   top: 0; /* Stick it to the top */
-  display: flex; /* Use flexbox for layout to get that iconic navbar layout*/
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  min-height: 4rem;
-  border-bottom: 2px solid var(--accent-color);
-  box-shadow: var(--secondary-color);
-  background-color: var(--secondary-color);
-  color: var(--background-color);
-  font-family: 'Pompiere', cursive;
-  z-index: 10;
-}
-
 .logo {
-  font-size: 1.5rem;
+  font-size: 1rem;
   padding-left: 30px; /* Add some padding to the left */
   color: var(--accent-color);
 }
 
+
 /* Style the buttons that are used to open the navbar */
-.navbar button {
+#topBar button {
   background-color: inherit;
   border: none;
   outline: none;
