@@ -29,13 +29,13 @@
 <div id="Client" class="tabcontent">
   <h2>Client Information</h2>
   <h3>Please fill in the following information:</h3>
-  <p>Do you have any dietary restrictions?</p>
+  <p>Do you have any dietary preferences?</p>
   <div id="dietOptions">
     <label><input type="checkbox" id="dietVegetarian" onchange="populateListProductChoices()"> Vegetarian</label><br>
     <label><input type="checkbox" id="dietGlutenFree" onchange="populateListProductChoices()"> Gluten-free</label><br>
     <label><input type="checkbox" id="dietLactoseFree" onchange="populateListProductChoices()"> Lactose-free</label>
   </div>
-  <p>Please indicate your food preference</p>
+  <p>Please indicate your quality preference</p>
 	<select id="foodPreference" name="foodPreference" onchange="populateListProductChoices()">
 	  <option value="Any">Any</option>
 	  <option value="Organic">Organic</option>
@@ -46,9 +46,21 @@
 <!-- Content of page if Products is selected -->
 <div id="Products" class="tabcontent">
   <h2>Your targeted products</h2>
-  <p>We preselected products based on your restrictions.</p>
+  <p>We preselected products based on your client profile.</p>
+   <p class="filter-option">Search filter:</p>
+   <select id="categoryFilter" name="categoryFilter" onchange="populateListProductChoices()">
+    <option value="None">None</option>
+    <option value="Fruit and Vegetable">Fruit and Vegetable</option>
+    <option value="Dairy and Eggs">Dairy and Eggs</option>
+    <option value="Pantry">Pantry</option>
+    <option value="Beverages">Beverages</option>
+    <option value="Meat and Poultry">Meat and Poultry</option>
+    <option value="Vegan and Vegetarian">Vegan and Vegetarian</option>
+    <option value="Bread and Bakery">Bread and Bakery</option>
+    <option value="Fish and Seafood">Fish and Seafood</option>
+   </select>
 	 <p class="product-instructions">Choose items to buy:</p>
-	 <div id="displayProduct" class="product-list"></div>
+   <div id="displayProduct" class="product-list"></div>
 	 <button id="addCart" type="button" class="block" onclick="selectedItems()">
 		Add selected items to cart.
 	</button>
