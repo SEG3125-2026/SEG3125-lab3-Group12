@@ -35,14 +35,15 @@ function populateListProductChoices() {
 		vegetarian: document.getElementById("dietVegetarian").checked,
 		glutenFree: document.getElementById("dietGlutenFree").checked,
 		lactoseFree: document.getElementById("dietLactoseFree").checked,
-		organicPreference: document.getElementById("foodPreference").value
+		organicPreference: document.getElementById("foodPreference").value,
+		catFilter: document.getElementById("categoryFilter").value
 	};
     var optionArray = restrictListProducts(products, preferences);
 
 	// for each item in the array, create a checkbox element, each containing information such as:
 	// <input type="checkbox" name="product" value="Bread">
 	// <label for="Bread">Bread/label><br>
-		
+
 	for (i = 0; i < optionArray.length; i++) {
 			
 		var productName = optionArray[i].name;
