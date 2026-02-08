@@ -39,12 +39,18 @@ function populateListProductChoices() {
     s2.innerHTML = "";
 		
 	// obtain a reduced list of products based on restrictions
+	var foodPreferenceValue = "Any";
+	var foodPreferenceChoice = document.querySelector("input[name='foodPreference']:checked");
+	if (foodPreferenceChoice) {
+		foodPreferenceValue = foodPreferenceChoice.value;
+	}
     var preferences = {
 		vegetarian: document.getElementById("dietVegetarian").checked,
 		glutenFree: document.getElementById("dietGlutenFree").checked,
 		lactoseFree: document.getElementById("dietLactoseFree").checked,
-		organicPreference: document.getElementById("foodPreference").value,
-		catFilter: document.getElementById("categoryFilter").value
+		organicPreference: foodPreferenceValue,
+		catFilter: document.getElementById("categoryFilter").value,
+		searchTerm: document.getElementById("searchInput").value
 	};
     var optionArray = restrictListProducts(products, preferences);
 

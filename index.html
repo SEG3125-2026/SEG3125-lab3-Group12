@@ -5,7 +5,9 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" type="text/css">
 </head>
 <body>
+  
 <header>
+  <!-- Content for the top search bar -->
   <div id="topSearchBar">
     <div id="logo">
       <i class="fa-solid fa-cart-shopping"></i>
@@ -15,16 +17,17 @@
       <i class="fa-solid fa-magnifying-glass"></i>
       <input type="text" id="searchInput" placeholder="Search for products..." oninput="populateListProductChoices()">
     </div>
-    <button class="tablinks" id="AccessibilityTab" onclick="openInfo(event, 'Accessibility')" title="Accessibility">
+    <button class="tablinks" id="AccessibilityButton" onclick="openInfo(event, 'Accessibility')" title="Accessibility">
       <i class="fa-solid fa-universal-access"></i>
     </button>
   </div>
+
   <nav id="navBar" aria-label="Breadcrumb">
     <ol class="breadcrumb">
-      <li><button class="tablinks active" onclick="openInfo(event, 'Home')">Home</button></li>
-      <li><button class="tablinks" onclick="openInfo(event, 'Client')">Client Information</button></li>
-      <li><button class="tablinks" onclick="openInfo(event, 'Products')">Products</button></li>
-      <li><button class="tablinks" onclick="openInfo(event, 'Cart')">Cart</button></li>
+      <li><p class="tablinks active" onclick="openInfo(event, 'Home')">Home</p></li>
+      <li><p class="tablinks" onclick="openInfo(event, 'Client')">Client Information</p></li>
+      <li><p class="tablinks" onclick="openInfo(event, 'Products')">Products</p></li>
+      <li><p class="tablinks" onclick="openInfo(event, 'Cart')">Cart</p></li>
     </ol>
   </nav>
 </header>
@@ -33,43 +36,60 @@
 <div id="Home" class="tabcontent">
   <h2>Welcome to AQAMart!</h2>
   <p>Your one-stop shop for all your grocery needs.</p>
+  <button onclick="openInfo(event, 'Client')">Get Started</button>
 </div>
 
 <!-- Content of page if Client is selected -->
 <div id="Client" class="tabcontent">
-  <h3>Please select in the following dietary and quality information:</h3>
-  <div id="dietOptions">
-    <label><input type="checkbox" id="dietVegetarian" onchange="populateListProductChoices()"> Vegetarian</label><br>
-    <label><input type="checkbox" id="dietGlutenFree" onchange="populateListProductChoices()"> Gluten-free</label><br>
-    <label><input type="checkbox" id="dietLactoseFree" onchange="populateListProductChoices()"> Lactose-free</label>
+<div id="ClientCard">
+  <h3>Tell us about your food preferences</h3>
+  <div id="ClientCardContent"> 
+    <div class = "ClientCardDetails">
+      <h4>Dietary Restrictions</h4>   
+      <div id="dietOptions">
+        <label class="switch"><i class="fa-solid fa-leaf"></i><input type="checkbox" id="dietVegetarian" onchange="populateListProductChoices()">Vegetarian<span class="slider round"></span></label>
+        <label class="switch"><i class="fa-solid fa-bread-slice"></i><input type="checkbox" id="dietGlutenFree" onchange="populateListProductChoices()">Gluten-free<span class="slider round"></span></label>
+        <label class="switch"><i class="fa-solid fa-cow"></i><input type="checkbox" id="dietLactoseFree" onchange="populateListProductChoices()"> Lactose-free<span class="slider round"></span></label>  
+      </div>
+    </div>
+  <div class = "ClientCardDetails">
+    <h4>Product Quality</h4>
+    <div id="foodPreference" onchange="populateListProductChoices()">
+        <label class="switch"><i class="fa-solid fa-circle-dot"></i><input type="radio" name="foodPreference" id="Any" value="Any" checked>Any<span class="slider round"></span></label>
+        <label class="switch"><i class="fa-solid fa-seedling"></i><input type="radio" name="foodPreference" id="Organic" value="Organic">Organic<span class="slider round"></span></label>
+        <label class="switch"><i class="fa-solid fa-ban"></i><input type="radio" name="foodPreference" id="Non-Organic" value="Non-Organic">Non-Organic<span class="slider round"></span></label>  
+      </div>
   </div>
-	<select id="foodPreference" name="foodPreference" onchange="populateListProductChoices()">
-	  <option value="Any">Any</option>
-	  <option value="Organic">Organic</option>
-    <option value="Non-Organic">Non-Organic</option>
-	</select>
+</div>
+<div id="buttonContainer">
+  <button onclick="openInfo(event, 'Products')">Proceed to Products Page</button>
+</div>
+</div>
 </div>
 
 <!-- Content of page if Products is selected -->
+ <!-- code from https://www.w3schools.com/howto/howto_js_list_grid_view.asp -->
 <div id="Products" class="tabcontent">
-  <p>We preselected products based on your client profile.</p>
-   <p class="filter-option">Search filter:</p>
-   <select id="categoryFilter" name="categoryFilter" onchange="populateListProductChoices()">
-    <option value="None">None</option>
-    <option value="Fruit and Vegetable">Fruit and Vegetable</option>
-    <option value="Dairy and Eggs">Dairy and Eggs</option>
-    <option value="Pantry">Pantry</option>
-    <option value="Beverages">Beverages</option>
-    <option value="Meat and Poultry">Meat and Poultry</option>
-    <option value="Vegan and Vegetarian">Vegan and Vegetarian</option>
-    <option value="Bread and Bakery">Bread and Bakery</option>
-    <option value="Fish and Seafood">Fish and Seafood</option>
-   </select>
-	 <p class="product-instructions">Choose items to buy:</p>
-   <div id="displayProduct" class="product-list"></div>
-	 <button id="addCart" type="button" class="block" onclick="selectedItems()">
-		Add selected items to cart.
-	</button>
+    <div id="productHeader">
+      <p>We preselected products based on your client profile.</p>
+      <div class="productSelect">
+      <button id="Client" type="button" class="block" onclick="selectedItems(); openInfo(event, 'Client')">Change Characteristics</button>
+      <p class="filter-option"><i class="fa-solid fa-filter"></i>Search filter:</p>
+      <select id="categoryFilter" name="categoryFilter" onchange="populateListProductChoices()">
+      <option value="None">None</option>
+      <option value="Fruit and Vegetable">Fruit and Vegetable</option>
+      <option value="Dairy and Eggs">Dairy and Eggs</option>
+      <option value="Pantry">Pantry</option>
+      <option value="Beverages">Beverages</option>
+      <option value="Meat and Poultry">Meat and Poultry</option>
+      <option value="Vegan and Vegetarian">Vegan and Vegetarian</option>
+      <option value="Bread and Bakery">Bread and Bakery</option>
+      <option value="Fish and Seafood">Fish and Seafood</option>
+      </select>
+      <button id="addCart" type="button" class="block" onclick="selectedItems(); openInfo(event, 'Cart')">Proceed to Cart</button>
+    </div>
+  </div>
+  <div id="displayProduct" class="product-list"></div>
 </div>
 
 <!-- Content of page if Cart is selected -->
@@ -81,21 +101,17 @@
 
 <!-- Content of page if Accessibility is selected -->
 <div id="Accessibility" class="tabcontent">
-  <h2>Accessibility</h2>
   <div id="displayAccessibility">
-  <p>Lucie can adjust the font size for easier reading.</p>
+  <p>Adjust the font size for your convenience.</p>
   <label for="fontSize">Font size:</label>
-  <input type="range" id="fontSize" min="16" max="32" step="2" value="20" oninput="updateFontSize(this.value)">
+  <input type="range" id="fontSizeControls" min="16" max="32" step="2" value="20" oninput="updateFontSize(this.value)">
   <span id="fontSizeValue">20px</span>
-  </div>
-  
-  <!-- Dark Mode Toggle for the wonderful customers who do their shopping at 3am -->
+    <!-- Dark Mode Toggle for the wonderful customers who do their shopping at 3am -->
    <p>Toggle dark mode for better visibility.</p>
-  <toggle-switch>
-    <input type="checkbox" id="darkModeToggle" onchange="toggleDarkMode()">
-    <label for="darkModeToggle">Dark Mode</label>
-  </toggle-switch>
+  <label for="darkModeToggle" class="switch"><input type="checkbox" id="darkModeToggle" onchange="toggleDarkMode()"><span class="slider round"></span></label>
+  </div>
 </div>
+
 <footer>
   <p>Website designed by Team 12</p>
 </footer>

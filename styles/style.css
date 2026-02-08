@@ -8,14 +8,16 @@
   --accent-color: #F5824A;
   --text-color: #040316;
 }
+
 /* For dark mode management */
 :root.dark-mode{
   --background-color: #041702;
-  --primary-color: #84bd85;
+  --primary-color: #427A43;
   --secondary-color: #c1d133;
   --accent-color: #b34209;
   --text-color: #eae9fc;
 }
+
 /* Styling of default tags*/
 :root{
   font-size: 20px;
@@ -32,9 +34,10 @@ header{
   position: fixed;
   width: 100%;
   top: 0;
-  font-family: 'Pompiere', cursive;
+  /* font-family: 'Pompiere', cursive; */
   z-index: 1000;
   color: var(--text-color);
+  border-bottom: 1px solid rgba(255,255,255,0.1);
 }
 
 footer{
@@ -47,7 +50,7 @@ footer{
   bottom: 0;
   background-color: var(--primary-color);
   color: var(--background-color);
-  font-family: 'Pompiere', cursive;
+  /* font-family: 'Pompiere', cursive; */
   font-size: 8px;
 }
 
@@ -59,20 +62,51 @@ input{
   background-color: transparent;
   font-family: 'Pompiere', cursive;
 }
+
 button:hover{
   cursor: pointer;
 }
 
-/* Styling header */
+i{
+  color: black;
+}
+
+label{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: fit-content;
+  font-family: 'Pompiere', cursive;
+  gap: 6px;
+}
+
+button{
+  border: none;
+  background-color: var(--accent-color);
+  color: var(--background-color);
+  font-size: 1rem;
+  padding: 6px 12px;
+  font-family: 'Pompiere', cursive;
+  border-radius: 8px;
+}
+select{
+  border: none;
+  font-size: 1rem;
+  padding: 6px 10px;
+  background-color: white;
+  font-family: 'Pompiere', cursive;
+  border-radius: 25px;
+}
+/* --------- Styling header's custom elements -----------*/
+
 #topSearchBar {
-  top: 0;
   width: 100%;
   display: flex;
   justify-content: space-between;
   align-items: center;  
   border-bottom: 1px solid rgba(255,255,255,0.1);
   background-color: var(--primary-color);
-  padding: 10px;
+  padding: 0.5rem 0;
 }
 
 #searchContainer {
@@ -84,47 +118,48 @@ button:hover{
   border-radius: 25px;
 }
 
-#navBar {
-  background-color: var(--primary-color);
-}
-
 #logo{
   height: 40px;
   margin-left: 16px;
   display: flex;
   align-items: center;
   gap: 8px;
-}
-
-#logo{
-  color: var(--secondary-color);
+    color: var(--secondary-color);
 }
 
 #logo span{
   color: var(--accent-color);
 }
 
+#logo i{
+  color: var(--secondary-color);
+}
+
+#navBar {
+  background-color: var(--primary-color);
+  height: 2rem;
+  display: flex;
+  align-items: center;
+}
+
 .breadcrumb {
   list-style: none;
   margin: 0;
-  padding: 10px 16px;
+  padding: 0.5rem;
   display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
   align-items: center;
 }
 
 .breadcrumb li{
   display: flex;
   align-items: center;
-  gap: 10px;
 }
 
+/* https://www.w3schools.com/howto/howto_css_breadcrumbs.asp */
 .breadcrumb li + li::before{
   content: ">";
   /* Keeping the color white no matter the color mode */
   color: white;
-  font-size: 0.9rem;
 }
 
 .breadcrumb .tablinks{
@@ -144,13 +179,20 @@ button:hover{
   text-underline-offset: 4px;
 }
 
-#AccessibilityTab{
+#AccessibilityButton{
   background-color: transparent;
   border: none;
   display: flex;
   gap: 12px;
   align-items: center;
 }
+
+#AccessibilityButton i{
+  color: var(--secondary-color);
+  font-size: 1.5rem;
+}
+
+/* --------- Styling tab contents -----------*/
 /* Style the tab content */
 .tabcontent{
   margin-top: 10px ;
@@ -163,31 +205,153 @@ button:hover{
   background-color: var(--background-color);
   color: var(--text-color);
 }
-
 .tabcontent.is-active{
   display: flex;
 }
-
 #Home{
   background-image: url('Background.png');
   background-size: cover;
   background-position: center;
 }
-#AccessibilityTab i{
-  font-size: 1.5rem;
+/* --------- Styling Client information tab ----------- */
+/* Code from https://www.w3schools.com/howto/howto_css_switch.asp */
+/* The switch - the box around the slider */
+.switch {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 34px;
+  padding-left: 70px;
+  cursor: pointer;
+}
+/* Hide default HTML checkbox/radio for switches only */
+.switch input[type="checkbox"],
+.switch input[type="radio"] {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+/* The slider */
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  width: 60px;
+  height: 34px;
+  background-color: #ccc;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+.switch input:checked + .slider {
+  background-color: var(--accent-color);
+}
+.switch input:focus + .slider {
+  box-shadow: 0 0 1px var(--accent-color);
+}
+.switch input:checked + .slider:before {
+  -webkit-transform: translateX(26px);
+  -ms-transform: translateX(26px);
+  transform: translateX(26px);
 }
 
-.product-instructions{
-  margin-bottom: 12px;
-  font-weight: 600;
+/* Rounded sliders */
+.slider.round {
+  border-radius: 34px;
+}
+.slider.round:before {
+  border-radius: 50%;
+}
+/* ------- Client information Page----------- */
+#ClientCard {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  min-width: 30rem;
+  min-height: 10rem;
+  padding: 2rem;
+  /* Keep it white */
+  background: white;
+  /* Text color */
+  color: black;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+#ClientCardContent{
+  display: flex;
+  flex-direction: row;
+  gap: 16px;
+}
+#dietOptions{
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+#foodPreference{
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+#buttonContainer{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+  width: 100%;
+}
+
+/* -------- Product Page ----------- */
+
+#productHeader{
+  position: fixed;
+  top: 5rem;
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  padding: 0.5rem 0;
+  margin-bottom: 16px;
+  background-color: var(--primary-color);
+  z-index: 900;
+}
+#productHeader i{
+  padding: 0.5rem;
 }
 
 .product-list{
   display: flex;
   flex-direction: column;
+  padding-top: 8rem;
   gap: 10px;
   width: min(720px, 90%);
   margin-bottom: 16px;
+}
+.productSelect{
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-direction: row;
+}
+#Products .product-list{
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
+  width: min(980px, 95%);
 }
 
 .product-item{
@@ -198,6 +362,14 @@ button:hover{
   background-color: rgba(255, 255, 255, 0.08);
   padding: 8px 12px;
   border-radius: 12px;
+  border: 1px solid rgba(0,0,0,0.1);
+}
+
+#Products .product-item{
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
 }
 
 .product-label{
@@ -222,12 +394,17 @@ button:hover{
 }
 
 .product-image{
-  width: 56px;
-  height: 56px;
+  width: 70px;
+  height: 70px;
   object-fit: cover;
   border-radius: 8px;
   border: 3px solid #f6ffcf33;
   background-color: rgba(255,255,255,0.1);
+}
+
+#Products .product-image{
+  width: 100%;
+  height: 10rem;
 }
 
 .product-image.placeholder{
@@ -237,14 +414,10 @@ button:hover{
   font-size: 0.75rem;
   color: rgba(255,255,255,0.7);
 }
+
 #addCart{
   font-weight: 600;
   letter-spacing: 0.02em;
-}
-
-#addCart:hover{
-  cursor: pointer;
-  background-color: rgba(255, 255, 255, 1);
 }
 
 #addCart:active{
@@ -252,6 +425,7 @@ button:hover{
   box-shadow: 0 1px 3px rgba(0,0,0,0.2);
 }
 
+/* -------- Cart Page ----------- */
 .cart-item{
   grid-template-columns: 64px 1fr auto auto auto 24px;
 }
@@ -277,10 +451,14 @@ button:hover{
   box-shadow: none;
 }
 
-.cart-remove:hover{
-  cursor: pointer;
-  background-color: rgba(255,255,255,0.08);
+/* ------- Accessibility ----------- */
+#displayAccessibility{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
 }
+
 #darkModeToggle{
    animation: ease-out 5s;
   }
