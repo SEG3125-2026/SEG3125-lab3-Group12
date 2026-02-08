@@ -1,165 +1,180 @@
-/* Source: https://fonts.google.com/selection/embed */
 @import url('https://fonts.googleapis.com/css2?family=Pompiere&display=swap');
-/* Source: https://colorhunt.co/palette/ececec84934a656d3f492828#/ */
-
+/* The color palette seemed off, replaced to make it more appealing */
+/* https://www.realtimecolors.com/?colors=040316-ffffff-427b43-bccc2e-f6844c&fonts=Inter-Inter */
 :root{
-  --background-color: #ECECEC;
-  --primary-color: #84934A;
-  --secondary-color: #656D3F;
-  --accent-color: #492828;
-  --homeFontColor: #FFFFFF;
+  --background-color: #FFFFFF;
+  --primary-color: #427A43;
+  --secondary-color: #BBCB2E;
+  --accent-color: #F5824A;
+  --text-color: #040316;
 }
 /* For dark mode management */
 :root.dark-mode{
-  --background-color: #656D3F;
-  --primary-color: #84934A;
-  --secondary-color: #492828;
-  --accent-color: #ECECEC;
-  --homeFontColor:#FFFFFF;
+  --background-color: #041702;
+  --primary-color: #84bd85;
+  --secondary-color: #c1d133;
+  --accent-color: #b34209;
+  --text-color: #eae9fc;
 }
-/* Default font size */
-html{
+/* Styling of default tags*/
+:root{
   font-size: 20px;
+  font-family: 'Pompiere', cursive;
 }
 body{
   margin: 0;
   padding: 0;
-  top: 0; /* Stick it to the top */
   background-color: var(--background-color);
+  color: var(--text-color);
   font-family: 'Pompiere', cursive;
-  font-size: 20px;
+}
+header{
+  position: fixed;
+  width: 100%;
+  top: 0;
+  font-family: 'Pompiere', cursive;
+  z-index: 1000;
+  color: var(--text-color);
 }
 
 footer{
-  position:fixed;
+  position: fixed;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 30px;
   width: 100%;
   bottom: 0;
-  text-align: center;
   background-color: var(--primary-color);
-  color: var(--accent-color);
+  color: var(--background-color);
   font-family: 'Pompiere', cursive;
-  font-size: 1rem;
-  padding: 3px 0;
-}
-
-button, select, textarea{
-  font-family: 'Pompiere', cursive;
+  font-size: 8px;
 }
 
 input{
+  border: none;
+  font-size: 1rem;
+  padding: 6px 10px;
+  width: 400px;
+  background-color: transparent;
   font-family: 'Pompiere', cursive;
 }
-
-label{
-  margin-right: 8px;
-}
-
-button, select, input, textarea{
-  font-size: 1rem;
-  border-radius: 10px;
-  border: 1px solid var(--accent-color);
-  padding: 6px 10px;
-  background-color: var(--background-color);
-  color: var(--accent-color);
-  transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
-}
-
-input[type="range"]{
-  padding: 0;
-  border: none;
-  background-color: transparent;
-  box-shadow: none;
-}
-
-button:hover, select:hover, input:hover, textarea:hover{
-  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-}
-
-button:active{
-  transform: translateY(1px);
-}
-
-#addCart{
-  font-weight: 600;
-  letter-spacing: 0.02em;
-}
-
-#addCart:hover{
+button:hover{
   cursor: pointer;
-  background-color: rgba(255, 255, 255, 1);
 }
 
-#addCart:active{
-  transform: translateY(2px) scale(0.98);
-  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+/* Styling header */
+#topSearchBar {
+  top: 0;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;  
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  background-color: var(--primary-color);
+  padding: 10px;
 }
 
-/* Style the navbar */
-.logo {
-  font-size: 1rem;
-  padding-left: 30px; /* Add some padding to the left */
-  color: var(--accent-color);
-}
-
-
-/* Style the buttons that are used to open the navbar */
-#topBar button {
-  background-color: inherit;
-  border: none;
-  outline: none;
-  cursor: pointer;
-  transition: 0.3s;
-  font-size: 1rem;
-  padding: 14px 16px;
+#searchContainer {
+  display: flex;
+  align-items: center;
+  padding: 7px;
+  /* Keeping the color white no matter the color mode */
+  background-color: white;
   border-radius: 25px;
 }
 
-.tabs {
-  display: flex;
-  gap: 10px; /* Space between buttons */
-  padding-right: 30px; /* Add some padding to the right */
-}
-
-/* Change background color of buttons on hover */
-.tabs button:hover {
+#navBar {
   background-color: var(--primary-color);
 }
 
-/* Create an active/current tablink class */
-.tabs button.active {
-  background-color: var(--secondary-color);
-  color: var(--background-color);
+#logo{
+  height: 40px;
+  margin-left: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
-/* forcing Accessibility button to remain the same style as the rest when active */
-.tabs button.active#AccessibilityTab {
-  background-color: var(--secondary-color);
-  color: var(--background-color);
+#logo{
+  color: var(--secondary-color);
 }
 
+#logo span{
+  color: var(--accent-color);
+}
+
+.breadcrumb {
+  list-style: none;
+  margin: 0;
+  padding: 10px 16px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.breadcrumb li{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.breadcrumb li + li::before{
+  content: ">";
+  /* Keeping the color white no matter the color mode */
+  color: white;
+  font-size: 0.9rem;
+}
+
+.breadcrumb .tablinks{
+  border: none;
+  background: transparent;
+  font-size: 1rem;
+  padding: 6px 8px;
+  cursor: pointer;
+  font-family: 'Pompiere', cursive;
+  /* Keeping the color white no matter the color mode */
+  color: white;
+}
+
+.breadcrumb .tablinks.active{
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+#AccessibilityTab{
+  background-color: transparent;
+  border: none;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
 /* Style the tab content */
-#Products, #Client, #Cart, #Accessibility{
-  min-height: 100vh;
+.tabcontent{
+  margin-top: 10px ;
+  min-height: 75vh;
   display: none;
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  padding: calc(4rem + 1.5rem) 12px 6rem;
+  padding: 5.5rem 12px 6rem;
   background-color: var(--background-color);
-  color: var(--accent-color);
+  color: var(--text-color);
 }
 
-#Home {
-  min-height: 100vh;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  padding: calc(4rem + 1.5rem) 12px 6rem;
+.tabcontent.is-active{
+  display: flex;
+}
+
+#Home{
   background-image: url('Background.png');
   background-size: cover;
   background-position: center;
-  background-color: var(--background-color);
-  color: var(--accent-color);
+}
+#AccessibilityTab i{
+  font-size: 1.5rem;
 }
 
 .product-instructions{
@@ -221,6 +236,20 @@ button:active{
   justify-content: center;
   font-size: 0.75rem;
   color: rgba(255,255,255,0.7);
+}
+#addCart{
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+#addCart:hover{
+  cursor: pointer;
+  background-color: rgba(255, 255, 255, 1);
+}
+
+#addCart:active{
+  transform: translateY(2px) scale(0.98);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
 }
 
 .cart-item{
