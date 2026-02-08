@@ -439,8 +439,16 @@ var products = [
 // Return a filtered list of products sorted by price (ascending)
 function restrictListProducts(prods, preferences) {
 	let filtered = [];
+	let search = "";
+	// Added search by product name
+	if (preferences.searchTerm) {
+		search = preferences.searchTerm.trim().toLowerCase();
+	}
 	for (let i = 0; i < prods.length; i += 1) {
 		let include = true;
+		if (search && !prods[i].name.toLowerCase().includes(search)) {
+			include = false;
+		}
 		if (preferences.vegetarian && !prods[i].vegetarian) {
 			include = false;
 		}

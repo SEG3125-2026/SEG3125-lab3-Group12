@@ -1,23 +1,31 @@
-
 // This function is called when any of the tab is clicked
 // It is adapted from https://www.w3schools.com/howto/howto_js_tabs.asp
 
 function openInfo(evt, tabName) {
 	// Get all elements with class="tabcontent" and hide them
-	tabcontent = document.getElementsByClassName("tabcontent");
-	for (i = 0; i < tabcontent.length; i++) {
-		tabcontent[i].style.display = "none";
+	var tabcontent = document.getElementsByClassName("tabcontent");
+	for (var i = 0; i < tabcontent.length; i++) {
+		tabcontent[i].classList.remove("is-active");
+		tabcontent[i].setAttribute("aria-hidden", "true");
 	}
 
 	// Get all elements with class="tablinks" and remove the class "active"
-	tablinks = document.getElementsByClassName("tablinks");
+	var tablinks = document.getElementsByClassName("tablinks");
 	for (i = 0; i < tablinks.length; i++) {
-		tablinks[i].className = tablinks[i].className.replace(" active", "");
+		tablinks[i].classList.remove("active");
+		tablinks[i].removeAttribute("aria-current");
 	}
 
 	// Show the current tab, and add an "active" class to the button that opened the tab
-	document.getElementById(tabName).style.display = "block";
-	evt.currentTarget.className += " active";
+	var activeTab = document.getElementById(tabName);
+	if (activeTab) {
+		activeTab.classList.add("is-active");
+		activeTab.setAttribute("aria-hidden", "false");
+	}
+	if (evt && evt.currentTarget) {
+		evt.currentTarget.classList.add("active");
+		evt.currentTarget.setAttribute("aria-current", "page");
+	}
 }
 
 
@@ -31,12 +39,18 @@ function populateListProductChoices() {
     s2.innerHTML = "";
 		
 	// obtain a reduced list of products based on restrictions
+	var foodPreferenceValue = "Any";
+	var foodPreferenceChoice = document.querySelector("input[name='foodPreference']:checked");
+	if (foodPreferenceChoice) {
+		foodPreferenceValue = foodPreferenceChoice.value;
+	}
     var preferences = {
 		vegetarian: document.getElementById("dietVegetarian").checked,
 		glutenFree: document.getElementById("dietGlutenFree").checked,
 		lactoseFree: document.getElementById("dietLactoseFree").checked,
-		organicPreference: document.getElementById("foodPreference").value,
-		catFilter: document.getElementById("categoryFilter").value
+		organicPreference: foodPreferenceValue,
+		catFilter: document.getElementById("categoryFilter").value,
+		searchTerm: document.getElementById("searchInput").value
 	};
     var optionArray = restrictListProducts(products, preferences);
 
@@ -223,6 +237,10 @@ window.onload = function() {
 	var c = document.getElementById('displayCart');
 	if (c) {
 		c.innerHTML = "Your cart is empty.";
+	}
+	var homeButton = document.querySelector(".tablinks.active");
+	if (homeButton) {
+		openInfo({ currentTarget: homeButton }, "Home");
 	}
 };
 
