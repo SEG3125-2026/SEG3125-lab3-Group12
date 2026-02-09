@@ -1,11 +1,16 @@
 // This function is called when any of the tab is clicked
 // It is adapted from https://www.w3schools.com/howto/howto_js_tabs.asp
+
+// cart state, used to re-render from one source of truth
 var cartItems = {};
 
+// turns a product name into a safe id string for dom lookups.
+// added b/c of case sensitiviy.
 function slugifyProductName(name) {
 	return name.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-_]/g, "");
 }
 
+// makes category labels readable in headings
 function getCategoryDisplayName(category) {
 	return category
 		.split(" ")
@@ -15,6 +20,8 @@ function getCategoryDisplayName(category) {
 		.join(" ");
 }
 
+// helper so focusing and typing in search
+// will open the products tab
 function openProductsTab() {
 	var productsTabLink = document.getElementById("navProducts");
 	if (productsTabLink) {
@@ -29,6 +36,7 @@ function handleSearchInput() {
 	populateListProductChoices();
 }
 
+// supports multi-select categories while keeping "all" as fallback behavior
 function toggleCategoryFilter(buttonElement) {
 	var categoryButtons = document.querySelectorAll(".category-btn");
 	var isAllButton = buttonElement.getAttribute("data-category") === "None";
@@ -57,6 +65,7 @@ function toggleCategoryFilter(buttonElement) {
 	populateListProductChoices();
 }
 
+// returns selected category values in normalized format for matching
 function getActiveCategoryFilters() {
 	var selectedButtons = document.querySelectorAll(".category-btn.active[data-category]:not([data-category='None'])");
 	var selectedCategories = [];
@@ -66,6 +75,7 @@ function getActiveCategoryFilters() {
 	return selectedCategories;
 }
 
+// updates the little label next to the slider and refreshes product list
 function updatePriceFilter(sliderValue) {
 	var priceValue = document.getElementById("priceFilterValue");
 	if (priceValue) {
@@ -74,27 +84,29 @@ function updatePriceFilter(sliderValue) {
 	populateListProductChoices();
 }
 
+// tab switcher adapted from w3schools
 function openInfo(evt, tabName) {
-	// Get all elements with class="tabcontent" and hide them
+	// hide every section first
 	var tabcontent = document.getElementsByClassName("tabcontent");
 	for (var i = 0; i < tabcontent.length; i++) {
 		tabcontent[i].classList.remove("is-active");
 		tabcontent[i].setAttribute("aria-hidden", "true");
 	}
 
-	// Get all elements with class="tablinks" and remove the class "active"
+	// clear all active nav states so we can set exactly one
 	var tablinks = document.getElementsByClassName("tablinks");
 	for (i = 0; i < tablinks.length; i++) {
 		tablinks[i].classList.remove("active");
 		tablinks[i].removeAttribute("aria-current");
 	}
 
-	// Show the current tab, and add an "active" class to the button that opened the tab
+	// show only the requested section
 	var activeTab = document.getElementById(tabName);
 	if (activeTab) {
 		activeTab.classList.add("is-active");
 		activeTab.setAttribute("aria-hidden", "false");
 	}
+	// this map keeps breadcrumb highlighting correct even when navigation starts from other buttons
 	var navMap = {
 		Home: "navHome",
 		Client: "navClient",
@@ -106,6 +118,7 @@ function openInfo(evt, tabName) {
 		navTarget.classList.add("active");
 		navTarget.setAttribute("aria-current", "page");
 	}
+	// accessibility button is outside breadcrumb, so it needs its own active handling
 	if (evt && evt.currentTarget && evt.currentTarget.id === "AccessibilityButton") {
 		evt.currentTarget.classList.add("active");
 		evt.currentTarget.setAttribute("aria-current", "page");
@@ -114,17 +127,18 @@ function openInfo(evt, tabName) {
 
 
 function populateListProductChoices() {
-    var s2 = document.getElementById("displayProduct");
+	var s2 = document.getElementById("displayProduct");
 	
-	// s2 represents the <div> in the Products tab, which shows the product list, so we first set it empty
-    s2.innerHTML = "";
+	// clear existing cards before rebuilding from current filters
+	s2.innerHTML = "";
 		
-	// obtain a reduced list of products based on restrictions
+	// read the organic radio group value, check for null
 	var foodPreferenceValue = "Any";
 	var foodPreferenceChoice = document.querySelector("input[name='foodPreference']:checked");
 	if (foodPreferenceChoice) {
 		foodPreferenceValue = foodPreferenceChoice.value;
 	}
+	// collecting all current filter settings in one object for clarity
 	var preferences = {
 		vegetarian: document.getElementById("dietVegetarian").checked,
 		glutenFree: document.getElementById("dietGlutenFree").checked,
@@ -136,17 +150,21 @@ function populateListProductChoices() {
 		priceCap: document.getElementById("priceFilter").value,
 		priceSort: document.getElementById("priceSort").value
 	};
+	// base filtering (dietary, category fallback, search, etc) comes from groceries.js
 	var optionArray = restrictListProducts(products, preferences);
+	// category chips are multi-select, so we apply them here after base filtering
 	if (preferences.selectedCategories.length > 0) {
 		optionArray = optionArray.filter(function(product) {
 			var productCategory = product.category.toLowerCase();
 			return preferences.selectedCategories.indexOf(productCategory) !== -1;
 		});
 	}
+	// enforce max price from slider
 	var maxPrice = parseFloat(preferences.priceCap);
 	optionArray = optionArray.filter(function(product) {
 		return product.price <= maxPrice;
 	});
+	// sort direction is controlled by dropdown
 	if (preferences.priceSort === "desc") {
 		optionArray.sort(function(a, b) {
 			return b.price - a.price;
@@ -156,6 +174,7 @@ function populateListProductChoices() {
 			return a.price - b.price;
 		});
 	}
+	// this keeps categories in a fixed display order instead of random object key order
 	var categoryOrder = [
 		"fruit and vegetable",
 		"dairy and eggs",
@@ -168,6 +187,7 @@ function populateListProductChoices() {
 	];
 	var groupedProducts = {};
 
+	// group products by category for sectioned rendering
 	for (var i = 0; i < optionArray.length; i += 1) {
 		var category = optionArray[i].category;
 		if (!groupedProducts[category]) {
@@ -176,6 +196,7 @@ function populateListProductChoices() {
 		groupedProducts[category].push(optionArray[i]);
 	}
 
+	// sort categories by preferred order, with unknown categories pushed to the end
 	var sortedCategories = Object.keys(groupedProducts).sort(function(a, b) {
 		var idxA = categoryOrder.indexOf(a);
 		var idxB = categoryOrder.indexOf(b);
@@ -191,6 +212,7 @@ function populateListProductChoices() {
 		return idxA - idxB;
 	});
 
+	// empty state avoids rendering blank sections when filters exclude everything
 	if (sortedCategories.length === 0) {
 		var emptyState = document.createElement("p");
 		emptyState.className = "empty-state";
@@ -199,6 +221,7 @@ function populateListProductChoices() {
 		return;
 	}
 
+	// build one section per category
 	for (var c = 0; c < sortedCategories.length; c += 1) {
 		var categoryName = sortedCategories[c];
 		var categorySection = document.createElement("section");
@@ -212,6 +235,7 @@ function populateListProductChoices() {
 		var categoryGrid = document.createElement("div");
 		categoryGrid.className = "product-category-grid";
 
+		// build product cards inside that category section
 		var productsInCategory = groupedProducts[categoryName];
 		for (var p = 0; p < productsInCategory.length; p += 1) {
 			var product = productsInCategory[p];
@@ -223,6 +247,7 @@ function populateListProductChoices() {
 			var itemRow = document.createElement("div");
 			itemRow.className = "product-item";
 
+			// use image placeholder when an image is missing so card layout stays same
 			if (product.image) {
 				var img = document.createElement("img");
 				img.src = product.image;
@@ -267,6 +292,7 @@ function populateListProductChoices() {
 			addBtn.type = "button";
 			addBtn.className = "add-to-cart-btn";
 			addBtn.appendChild(document.createTextNode("Add to Cart"));
+			// closure captures the current product name per button
 			addBtn.onclick = (function(currentProductName) {
 				return function() {
 					addProductToCart(currentProductName);
@@ -283,6 +309,7 @@ function populateListProductChoices() {
 	}
 }
 
+// reads qty from the card and merges it into cart state
 function addProductToCart(productName) {
 	var productId = slugifyProductName(productName);
 	var qtyInput = document.getElementById("qty-" + productId);
@@ -298,15 +325,18 @@ function addProductToCart(productName) {
 	renderCart();
 }
 
+// delete by key, then re-render
 function removeFromCart(productName) {
 	delete cartItems[productName];
 	renderCart();
 }
 
+// used by buttons; renders current state
 function selectedItems(){
 	renderCart();
 }
 
+// rebuilds the cart ui from cartItems each time state changes
 function renderCart() {
 	var c = document.getElementById('displayCart');
 	c.innerHTML = "";
@@ -321,6 +351,7 @@ function renderCart() {
 	cartList.className = "cart-list";
 	var chosenProducts = [];
 
+	// walk cart keys and lookup product metadata from master list
 	for (var i = 0; i < productNames.length; i += 1) {
 		var name = productNames[i];
 		var qty = cartItems[name];
@@ -328,9 +359,10 @@ function renderCart() {
 		for (var j = 0; j < products.length; j += 1) {
 			if (products[j].name === name) {
 				product = products[j];
-				break;
+			break;
 			}
 		}
+		// skip unknown names
 		if (!product) {
 			continue;
 		}
@@ -385,6 +417,7 @@ function renderCart() {
 	c.appendChild(total);
 }
 
+// initialize cart text, price label, and default visible tab state
 window.onload = function() {
 	renderCart();
 	updatePriceFilter(document.getElementById("priceFilter").value);
@@ -394,6 +427,7 @@ window.onload = function() {
 	}
 };
 
+// applying global font scaling from accessibility slider
 function updateFontSize(sizePx) {
 	var size = parseInt(sizePx, 10);
 	if (!size) {
@@ -407,6 +441,7 @@ function updateFontSize(sizePx) {
 	}
 }
 
+// dark mode is a single class toggle on root
 function toggleDarkMode() {
 	var html = document.documentElement;
 	html.classList.toggle("dark-mode");
