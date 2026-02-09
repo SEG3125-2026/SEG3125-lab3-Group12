@@ -15,7 +15,7 @@
     </div>
     <div id="searchContainer">
       <i class="fa-solid fa-magnifying-glass"></i>
-      <input type="text" id="searchInput" placeholder="Search for products..." oninput="populateListProductChoices()">
+      <input type="text" id="searchInput" placeholder="Search for products..." oninput="handleSearchInput()">
     </div>
     <button class="tablinks" id="AccessibilityButton" onclick="openInfo(event, 'Accessibility')" title="Accessibility">
       <i class="fa-solid fa-universal-access"></i>
@@ -24,10 +24,10 @@
 
   <nav id="navBar" aria-label="Breadcrumb">
     <ol class="breadcrumb">
-      <li><p class="tablinks active" onclick="openInfo(event, 'Home')">Home</p></li>
-      <li><p class="tablinks" onclick="openInfo(event, 'Client')">Client Information</p></li>
-      <li><p class="tablinks" onclick="openInfo(event, 'Products')">Products</p></li>
-      <li><p class="tablinks" onclick="openInfo(event, 'Cart')">Cart</p></li>
+      <li><p class="tablinks active" id="navHome" onclick="openInfo(event, 'Home')">Home</p></li>
+      <li><p class="tablinks" id="navClient" onclick="openInfo(event, 'Client')">Client Information</p></li>
+      <li><p class="tablinks" id="navProducts" onclick="openInfo(event, 'Products')">Products</p></li>
+      <li><p class="tablinks" id="navCart" onclick="openInfo(event, 'Cart')">Cart</p></li>
     </ol>
   </nav>
 </header>
@@ -45,7 +45,7 @@
   <h3>Tell us about your food preferences</h3>
   <div id="ClientCardContent"> 
     <div class = "ClientCardDetails">
-      <h4>Dietary Restrictions</h4>   
+      <h4>Dietary Preferences</h4>   
       <div id="dietOptions">
         <label class="switch"><i class="fa-solid fa-leaf"></i><input type="checkbox" id="dietVegetarian" onchange="populateListProductChoices()">Vegetarian<span class="slider round"></span></label>
         <label class="switch"><i class="fa-solid fa-bread-slice"></i><input type="checkbox" id="dietGlutenFree" onchange="populateListProductChoices()">Gluten-free<span class="slider round"></span></label>
@@ -53,7 +53,7 @@
       </div>
     </div>
   <div class = "ClientCardDetails">
-    <h4>Product Quality</h4>
+    <h4>Shopping Preference</h4>
     <div id="foodPreference" onchange="populateListProductChoices()">
         <label class="switch"><i class="fa-solid fa-circle-dot"></i><input type="radio" name="foodPreference" id="Any" value="Any" checked>Any<span class="slider round"></span></label>
         <label class="switch"><i class="fa-solid fa-seedling"></i><input type="radio" name="foodPreference" id="Organic" value="Organic">Organic<span class="slider round"></span></label>
@@ -71,22 +71,38 @@
  <!-- code from https://www.w3schools.com/howto/howto_js_list_grid_view.asp -->
 <div id="Products" class="tabcontent">
     <div id="productHeader">
-      <p>We preselected products based on your client profile.</p>
+      <p class="product-header-title">Recommended products based on your preferences.</p>
       <div class="productSelect">
-      <button id="Client" type="button" class="block" onclick="selectedItems(); openInfo(event, 'Client')">Change Characteristics</button>
-      <p class="filter-option"><i class="fa-solid fa-filter"></i>Search filter:</p>
-      <select id="categoryFilter" name="categoryFilter" onchange="populateListProductChoices()">
-      <option value="None">None</option>
-      <option value="Fruit and Vegetable">Fruit and Vegetable</option>
-      <option value="Dairy and Eggs">Dairy and Eggs</option>
-      <option value="Pantry">Pantry</option>
-      <option value="Beverages">Beverages</option>
-      <option value="Meat and Poultry">Meat and Poultry</option>
-      <option value="Vegan and Vegetarian">Vegan and Vegetarian</option>
-      <option value="Bread and Bakery">Bread and Bakery</option>
-      <option value="Fish and Seafood">Fish and Seafood</option>
-      </select>
-      <button id="addCart" type="button" class="block" onclick="selectedItems(); openInfo(event, 'Cart')">Proceed to Cart</button>
+        <div class="product-header-section product-cats">
+          <button id="Client" type="button" class="block" onclick="selectedItems(); openInfo(event, 'Client')">Update Preferences</button>
+          <p class="filter-option"><i class="fa-solid fa-filter"></i>Category filter:</p>
+          <div id="categoryFilterButtons" class="category-filters" role="group" aria-label="Category filters">
+          <button type="button" class="category-btn active" data-category="None" onclick="toggleCategoryFilter(this)">All</button>
+          <button type="button" class="category-btn" data-category="Fruit and Vegetable" onclick="toggleCategoryFilter(this)">Fruit & Vegetable</button>
+          <button type="button" class="category-btn" data-category="Dairy and Eggs" onclick="toggleCategoryFilter(this)">Dairy & Eggs</button>
+          <button type="button" class="category-btn" data-category="Pantry" onclick="toggleCategoryFilter(this)">Pantry</button>
+          <button type="button" class="category-btn" data-category="Beverages" onclick="toggleCategoryFilter(this)">Beverages</button>
+          <button type="button" class="category-btn" data-category="Meat and Poultry" onclick="toggleCategoryFilter(this)">Meat & Poultry</button>
+          <button type="button" class="category-btn" data-category="Vegan and Vegetarian" onclick="toggleCategoryFilter(this)">Vegan & Vegetarian</button>
+          <button type="button" class="category-btn" data-category="Bread and Bakery" onclick="toggleCategoryFilter(this)">Bread & Bakery</button>
+          <button type="button" class="category-btn" data-category="Fish and Seafood" onclick="toggleCategoryFilter(this)">Fish & Seafood</button>
+          </div>
+        </div>
+        <div class="product-header-section product-price">
+          <p class="filter-option"><i class="fa-solid fa-tag"></i>Max price:</p>
+          <label class="price-slider-wrap" for="priceFilter">
+          <input type="range" id="priceFilter" name="priceFilter" min="0" max="25" step="1" value="25" oninput="updatePriceFilter(this.value)">
+          <span id="priceFilterValue">Up to $25</span>
+          </label>
+        </div>
+        <div class="product-header-section product-sort-actions">
+          <p class="filter-option"><i class="fa-solid fa-sort"></i>Sort by price:</p>
+          <select id="priceSort" name="priceSort" onchange="populateListProductChoices()">
+          <option value="asc">Low to High</option>
+          <option value="desc">High to Low</option>
+          </select>
+          <button id="addCart" type="button" class="block" onclick="selectedItems(); openInfo(event, 'Cart')">View Cart</button>
+        </div>
     </div>
   </div>
   <div id="displayProduct" class="product-list"></div>
@@ -95,7 +111,7 @@
 <!-- Content of page if Cart is selected -->
 <div id="Cart" class="tabcontent">
   <h2>Cart</h2>
-  <p>Here is your cart.</p>
+  <p>Items in your cart.</p>
   <div id="displayCart"></div>
 </div>
 
@@ -107,8 +123,10 @@
   <input type="range" id="fontSizeControls" min="16" max="32" step="2" value="20" oninput="updateFontSize(this.value)">
   <span id="fontSizeValue">20px</span>
     <!-- Dark Mode Toggle for the wonderful customers who do their shopping at 3am -->
-   <p>Toggle dark mode for better visibility.</p>
-  <label for="darkModeToggle" class="switch"><input type="checkbox" id="darkModeToggle" onchange="toggleDarkMode()"><span class="slider round"></span></label>
+  <label for="darkModeToggle" class="darkmode-checkbox">
+    <input type="checkbox" id="darkModeToggle" onchange="toggleDarkMode()">
+    Toggle dark mode for better visibility.
+  </label>
   </div>
 </div>
 

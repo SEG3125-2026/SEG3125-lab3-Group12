@@ -1,5 +1,78 @@
 // This function is called when any of the tab is clicked
 // It is adapted from https://www.w3schools.com/howto/howto_js_tabs.asp
+var cartItems = {};
+
+function slugifyProductName(name) {
+	return name.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-_]/g, "");
+}
+
+function getCategoryDisplayName(category) {
+	return category
+		.split(" ")
+		.map(function(word) {
+			return word.charAt(0).toUpperCase() + word.slice(1);
+		})
+		.join(" ");
+}
+
+function openProductsTab() {
+	var productsTabLink = document.getElementById("navProducts");
+	if (productsTabLink) {
+		openInfo({ currentTarget: productsTabLink }, "Products");
+		return;
+	}
+	openInfo(null, "Products");
+}
+
+function handleSearchInput() {
+	openProductsTab();
+	populateListProductChoices();
+}
+
+function toggleCategoryFilter(buttonElement) {
+	var categoryButtons = document.querySelectorAll(".category-btn");
+	var isAllButton = buttonElement.getAttribute("data-category") === "None";
+
+	if (isAllButton) {
+		for (var i = 0; i < categoryButtons.length; i += 1) {
+			categoryButtons[i].classList.remove("active");
+		}
+		buttonElement.classList.add("active");
+		populateListProductChoices();
+		return;
+	}
+
+	var allButton = document.querySelector(".category-btn[data-category='None']");
+	if (allButton) {
+		allButton.classList.remove("active");
+	}
+
+	buttonElement.classList.toggle("active");
+
+	var selectedSpecificButtons = document.querySelectorAll(".category-btn.active[data-category]:not([data-category='None'])");
+	if (selectedSpecificButtons.length === 0 && allButton) {
+		allButton.classList.add("active");
+	}
+
+	populateListProductChoices();
+}
+
+function getActiveCategoryFilters() {
+	var selectedButtons = document.querySelectorAll(".category-btn.active[data-category]:not([data-category='None'])");
+	var selectedCategories = [];
+	for (var i = 0; i < selectedButtons.length; i += 1) {
+		selectedCategories.push(selectedButtons[i].getAttribute("data-category").toLowerCase());
+	}
+	return selectedCategories;
+}
+
+function updatePriceFilter(sliderValue) {
+	var priceValue = document.getElementById("priceFilterValue");
+	if (priceValue) {
+		priceValue.textContent = "Up to $" + sliderValue;
+	}
+	populateListProductChoices();
+}
 
 function openInfo(evt, tabName) {
 	// Get all elements with class="tabcontent" and hide them
@@ -22,15 +95,23 @@ function openInfo(evt, tabName) {
 		activeTab.classList.add("is-active");
 		activeTab.setAttribute("aria-hidden", "false");
 	}
-	if (evt && evt.currentTarget) {
+	var navMap = {
+		Home: "navHome",
+		Client: "navClient",
+		Products: "navProducts",
+		Cart: "navCart"
+	};
+	var navTarget = document.getElementById(navMap[tabName]);
+	if (navTarget) {
+		navTarget.classList.add("active");
+		navTarget.setAttribute("aria-current", "page");
+	}
+	if (evt && evt.currentTarget && evt.currentTarget.id === "AccessibilityButton") {
 		evt.currentTarget.classList.add("active");
 		evt.currentTarget.setAttribute("aria-current", "page");
 	}
 }
 
-
-// Generate a checkbox list from a list of products
-// It makes each product name as the label for the checkbox
 
 function populateListProductChoices() {
     var s2 = document.getElementById("displayProduct");
@@ -44,200 +125,269 @@ function populateListProductChoices() {
 	if (foodPreferenceChoice) {
 		foodPreferenceValue = foodPreferenceChoice.value;
 	}
-    var preferences = {
+	var preferences = {
 		vegetarian: document.getElementById("dietVegetarian").checked,
 		glutenFree: document.getElementById("dietGlutenFree").checked,
 		lactoseFree: document.getElementById("dietLactoseFree").checked,
 		organicPreference: foodPreferenceValue,
-		catFilter: document.getElementById("categoryFilter").value,
-		searchTerm: document.getElementById("searchInput").value
+		catFilter: "None",
+		selectedCategories: getActiveCategoryFilters(),
+		searchTerm: document.getElementById("searchInput").value,
+		priceCap: document.getElementById("priceFilter").value,
+		priceSort: document.getElementById("priceSort").value
 	};
-    var optionArray = restrictListProducts(products, preferences);
+	var optionArray = restrictListProducts(products, preferences);
+	if (preferences.selectedCategories.length > 0) {
+		optionArray = optionArray.filter(function(product) {
+			var productCategory = product.category.toLowerCase();
+			return preferences.selectedCategories.indexOf(productCategory) !== -1;
+		});
+	}
+	var maxPrice = parseFloat(preferences.priceCap);
+	optionArray = optionArray.filter(function(product) {
+		return product.price <= maxPrice;
+	});
+	if (preferences.priceSort === "desc") {
+		optionArray.sort(function(a, b) {
+			return b.price - a.price;
+		});
+	} else {
+		optionArray.sort(function(a, b) {
+			return a.price - b.price;
+		});
+	}
+	var categoryOrder = [
+		"fruit and vegetable",
+		"dairy and eggs",
+		"pantry",
+		"beverages",
+		"meat and poultry",
+		"fish and seafood",
+		"bread and bakery",
+		"vegan and vegetarian"
+	];
+	var groupedProducts = {};
 
-	// for each item in the array, create a checkbox element, each containing information such as:
-	// <input type="checkbox" name="product" value="Bread">
-	// <label for="Bread">Bread/label><br>
+	for (var i = 0; i < optionArray.length; i += 1) {
+		var category = optionArray[i].category;
+		if (!groupedProducts[category]) {
+			groupedProducts[category] = [];
+		}
+		groupedProducts[category].push(optionArray[i]);
+	}
 
-	for (i = 0; i < optionArray.length; i++) {
-			
-		var productName = optionArray[i].name;
-		var productPrice = optionArray[i].price.toFixed(2);
-		var productOrganic = optionArray[i].organic ? "Organic" : "Non-organic";
-		var productId = productName.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-_]/g, "");
+	var sortedCategories = Object.keys(groupedProducts).sort(function(a, b) {
+		var idxA = categoryOrder.indexOf(a);
+		var idxB = categoryOrder.indexOf(b);
+		if (idxA === -1 && idxB === -1) {
+			return a.localeCompare(b);
+		}
+		if (idxA === -1) {
+			return 1;
+		}
+		if (idxB === -1) {
+			return -1;
+		}
+		return idxA - idxB;
+	});
 
-		var itemRow = document.createElement("div");
-		itemRow.className = "product-item";
+	if (sortedCategories.length === 0) {
+		var emptyState = document.createElement("p");
+		emptyState.className = "empty-state";
+		emptyState.appendChild(document.createTextNode("No products match your current filters."));
+		s2.appendChild(emptyState);
+		return;
+	}
 
-		if (optionArray[i].image) {
-			var img = document.createElement("img");
-			img.src = optionArray[i].image;
-			img.alt = productName;
-			img.className = "product-image";
-			itemRow.appendChild(img);
-		} else {
-			var imgPlaceholder = document.createElement("div");
-			imgPlaceholder.className = "product-image placeholder";
-			imgPlaceholder.appendChild(document.createTextNode("IMG"));
-			itemRow.appendChild(imgPlaceholder);
+	for (var c = 0; c < sortedCategories.length; c += 1) {
+		var categoryName = sortedCategories[c];
+		var categorySection = document.createElement("section");
+		categorySection.className = "product-category-section";
+
+		var categoryTitle = document.createElement("h3");
+		categoryTitle.className = "product-category-title";
+		categoryTitle.appendChild(document.createTextNode(getCategoryDisplayName(categoryName)));
+		categorySection.appendChild(categoryTitle);
+
+		var categoryGrid = document.createElement("div");
+		categoryGrid.className = "product-category-grid";
+
+		var productsInCategory = groupedProducts[categoryName];
+		for (var p = 0; p < productsInCategory.length; p += 1) {
+			var product = productsInCategory[p];
+			var productName = product.name;
+			var productPrice = product.price.toFixed(2);
+			var productOrganic = product.organic ? "Organic" : "Non-organic";
+			var productId = slugifyProductName(productName);
+
+			var itemRow = document.createElement("div");
+			itemRow.className = "product-item";
+
+			if (product.image) {
+				var img = document.createElement("img");
+				img.src = product.image;
+				img.alt = productName;
+				img.className = "product-image";
+				itemRow.appendChild(img);
+			} else {
+				var imgPlaceholder = document.createElement("div");
+				imgPlaceholder.className = "product-image placeholder";
+				imgPlaceholder.appendChild(document.createTextNode("IMG"));
+				itemRow.appendChild(imgPlaceholder);
+			}
+
+			var label = document.createElement("p");
+			label.className = "product-label";
+			label.appendChild(document.createTextNode(productName));
+			itemRow.appendChild(label);
+
+			var price = document.createElement("span");
+			price.className = "product-price";
+			price.appendChild(document.createTextNode("$" + productPrice + " (" + productOrganic + ")"));
+			itemRow.appendChild(price);
+
+			var controlsWrap = document.createElement("div");
+			controlsWrap.className = "product-controls";
+
+			var qtyLabel = document.createElement("label");
+			qtyLabel.htmlFor = "qty-" + productId;
+			qtyLabel.className = "product-qty-label";
+			qtyLabel.appendChild(document.createTextNode("Qty"));
+			controlsWrap.appendChild(qtyLabel);
+
+			var qtyInput = document.createElement("input");
+			qtyInput.type = "number";
+			qtyInput.min = "1";
+			qtyInput.value = "1";
+			qtyInput.id = "qty-" + productId;
+			qtyInput.className = "product-qty";
+			controlsWrap.appendChild(qtyInput);
+
+			var addBtn = document.createElement("button");
+			addBtn.type = "button";
+			addBtn.className = "add-to-cart-btn";
+			addBtn.appendChild(document.createTextNode("Add to Cart"));
+			addBtn.onclick = (function(currentProductName) {
+				return function() {
+					addProductToCart(currentProductName);
+				};
+			})(productName);
+			controlsWrap.appendChild(addBtn);
+
+			itemRow.appendChild(controlsWrap);
+			categoryGrid.appendChild(itemRow);
 		}
 
-		// create the checkbox and add in HTML DOM
-		var checkbox = document.createElement("input");
-		checkbox.type = "checkbox";
-		checkbox.name = "product";
-		checkbox.value = productName;
-		checkbox.id = "check-" + productId;
-		itemRow.appendChild(checkbox);
-		
-		// create a label for the checkbox, and also add in HTML DOM
-		var label = document.createElement('label')
-		label.htmlFor = checkbox.id;
-		label.className = "product-label";
-		label.appendChild(document.createTextNode(productName));
-		itemRow.appendChild(label);
-
-		var price = document.createElement("span");
-		price.className = "product-price";
-		price.appendChild(document.createTextNode("$" + productPrice + " (" + productOrganic + ")"));
-		itemRow.appendChild(price);
-
-		var qtyLabel = document.createElement("label");
-		qtyLabel.htmlFor = "qty-" + productId;
-		qtyLabel.className = "product-qty-label";
-		qtyLabel.appendChild(document.createTextNode("Qty"));
-		itemRow.appendChild(qtyLabel);
-
-		var qtyInput = document.createElement("input");
-		qtyInput.type = "number";
-		qtyInput.min = "1";
-		qtyInput.value = "1";
-		qtyInput.id = "qty-" + productId;
-		qtyInput.className = "product-qty";
-		qtyInput.setAttribute("data-name", productName);
-		itemRow.appendChild(qtyInput);
-		
-		s2.appendChild(itemRow);
+		categorySection.appendChild(categoryGrid);
+		s2.appendChild(categorySection);
 	}
 }
 
-// This function is called when the "Add selected items to cart" button in clicked
-// The purpose is to build the HTML to be displayed (a Paragraph) 
-// We build a paragraph to contain the list of selected items, and the total price
+function addProductToCart(productName) {
+	var productId = slugifyProductName(productName);
+	var qtyInput = document.getElementById("qty-" + productId);
+	var qty = parseInt(qtyInput.value, 10);
+	if (!qty || qty < 1) {
+		qty = 1;
+		qtyInput.value = "1";
+	}
+	if (!cartItems[productName]) {
+		cartItems[productName] = 0;
+	}
+	cartItems[productName] += qty;
+	renderCart();
+}
+
+function removeFromCart(productName) {
+	delete cartItems[productName];
+	renderCart();
+}
 
 function selectedItems(){
-	var ele = document.getElementsByName("product");
-	var chosenProducts = [];
-	
+	renderCart();
+}
+
+function renderCart() {
 	var c = document.getElementById('displayCart');
 	c.innerHTML = "";
-	
-	var cartList = document.createElement("div");
-	cartList.className = "product-list";
 
-	// build list of selected item
-	var para = document.createElement("P");
-	para.innerHTML = "You selected : ";
-	para.appendChild(document.createElement("br"));
-	for (i = 0; i < ele.length; i++) { 
-		if (ele[i].checked) {
-			var name = ele[i].value;
-			var productId = name.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-_]/g, "");
-			var qtyInput = document.getElementById("qty-" + productId);
-			var qty = parseInt(qtyInput.value, 10);
-			if (!qty || qty < 1) {
-				qty = 1;
-				qtyInput.value = "1";
-			}
-			var priceEach = 0;
-			var productImage = "";
-			for (let j = 0; j < products.length; j += 1) {
-				if (products[j].name === name) {
-					priceEach = products[j].price;
-					productImage = products[j].image;
-					break;
-				}
-			}
-			var lineTotal = (priceEach * qty).toFixed(2);
-
-			var cartRow = document.createElement("div");
-			cartRow.className = "product-item cart-item";
-
-			if (productImage) {
-				var cartImg = document.createElement("img");
-				cartImg.src = productImage;
-				cartImg.alt = name;
-				cartImg.className = "product-image";
-				cartRow.appendChild(cartImg);
-			} else {
-				var cartImgPlaceholder = document.createElement("div");
-				cartImgPlaceholder.className = "product-image placeholder";
-				cartImgPlaceholder.appendChild(document.createTextNode("IMG"));
-				cartRow.appendChild(cartImgPlaceholder);
-			}
-
-			var nameSpan = document.createElement("span");
-			nameSpan.className = "cart-name";
-			nameSpan.appendChild(document.createTextNode(name));
-			cartRow.appendChild(nameSpan);
-
-			var qtySpan = document.createElement("span");
-			qtySpan.className = "cart-qty";
-			qtySpan.appendChild(document.createTextNode("x" + qty));
-			cartRow.appendChild(qtySpan);
-
-			var unitSpan = document.createElement("span");
-			unitSpan.className = "cart-unit";
-			unitSpan.appendChild(document.createTextNode("$" + priceEach.toFixed(2)));
-			cartRow.appendChild(unitSpan);
-
-			var totalSpan = document.createElement("span");
-			totalSpan.className = "cart-line-total";
-			totalSpan.appendChild(document.createTextNode("$" + lineTotal));
-			cartRow.appendChild(totalSpan);
-
-			var removeBtn = document.createElement("button");
-			removeBtn.type = "button";
-			removeBtn.className = "cart-remove";
-			removeBtn.setAttribute("aria-label", "Remove " + name);
-			removeBtn.appendChild(document.createTextNode("X"));
-			removeBtn.onclick = function() {
-				for (let k = 0; k < ele.length; k += 1) {
-					if (ele[k].value === name) {
-						ele[k].checked = false;
-						break;
-					}
-				}
-				selectedItems();
-			};
-			cartRow.appendChild(removeBtn);
-
-			if (qty === 1) {
-				qtySpan.style.visibility = "hidden";
-				unitSpan.style.visibility = "hidden";
-			}
-
-			cartList.appendChild(cartRow);
-			chosenProducts.push({ name: name, qty: qty });
-		}
-	}
-	if (chosenProducts.length === 0) {
+	var productNames = Object.keys(cartItems);
+	if (productNames.length === 0) {
 		c.appendChild(document.createTextNode("Your cart is empty."));
 		return;
 	}
-	
-	// add paragraph and total price
-	c.appendChild(para);
+
+	var cartList = document.createElement("div");
+	cartList.className = "cart-list";
+	var chosenProducts = [];
+
+	for (var i = 0; i < productNames.length; i += 1) {
+		var name = productNames[i];
+		var qty = cartItems[name];
+		var product = null;
+		for (var j = 0; j < products.length; j += 1) {
+			if (products[j].name === name) {
+				product = products[j];
+				break;
+			}
+		}
+		if (!product) {
+			continue;
+		}
+		var lineTotal = (product.price * qty).toFixed(2);
+
+		var cartRow = document.createElement("div");
+		cartRow.className = "cart-item";
+
+		if (product.image) {
+			var cartImg = document.createElement("img");
+			cartImg.src = product.image;
+			cartImg.alt = name;
+			cartImg.className = "product-image";
+			cartRow.appendChild(cartImg);
+		}
+
+		var nameSpan = document.createElement("span");
+		nameSpan.className = "cart-name";
+		nameSpan.appendChild(document.createTextNode(name));
+		cartRow.appendChild(nameSpan);
+
+		var qtySpan = document.createElement("span");
+		qtySpan.className = "cart-qty";
+		qtySpan.appendChild(document.createTextNode("Qty: " + qty));
+		cartRow.appendChild(qtySpan);
+
+		var totalSpan = document.createElement("span");
+		totalSpan.className = "cart-line-total";
+		totalSpan.appendChild(document.createTextNode("$" + lineTotal));
+		cartRow.appendChild(totalSpan);
+
+		var removeBtn = document.createElement("button");
+		removeBtn.type = "button";
+		removeBtn.className = "cart-remove";
+		removeBtn.setAttribute("aria-label", "Remove " + name);
+		removeBtn.appendChild(document.createTextNode("Remove"));
+		removeBtn.onclick = (function(currentProductName) {
+			return function() {
+				removeFromCart(currentProductName);
+			};
+		})(name);
+		cartRow.appendChild(removeBtn);
+
+		cartList.appendChild(cartRow);
+		chosenProducts.push({ name: name, qty: qty });
+	}
+
 	c.appendChild(cartList);
-	c.appendChild(document.createTextNode("Total Price is $" + getTotalPrice(chosenProducts).toFixed(2)));
-		
+	var total = document.createElement("p");
+	total.className = "cart-total";
+	total.appendChild(document.createTextNode("Total Price: $" + getTotalPrice(chosenProducts).toFixed(2)));
+	c.appendChild(total);
 }
 
 window.onload = function() {
-	populateListProductChoices();
-	var c = document.getElementById('displayCart');
-	if (c) {
-		c.innerHTML = "Your cart is empty.";
-	}
+	renderCart();
+	updatePriceFilter(document.getElementById("priceFilter").value);
 	var homeButton = document.querySelector(".tablinks.active");
 	if (homeButton) {
 		openInfo({ currentTarget: homeButton }, "Home");
